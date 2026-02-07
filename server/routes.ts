@@ -93,6 +93,7 @@ export async function registerRoutes(
         "client/src/components/game/DimensionalReport.tsx",
         "client/src/components/game/FinalAuditPanel.tsx",
         "client/src/components/game/SceneMaterialOverride.tsx",
+        "client/src/components/game/MaterialPresetPanel.tsx",
         "client/src/components/ui/accordion.tsx",
         "client/src/components/ui/alert-dialog.tsx",
         "client/src/components/ui/alert.tsx",
