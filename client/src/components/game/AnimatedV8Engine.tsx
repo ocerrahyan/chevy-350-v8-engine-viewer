@@ -1155,7 +1155,7 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
     <group>
       {/* Main block - V shape with valley */}
       <mesh position={[0, 0.2, 0]} castShadow={!cadMode} receiveShadow={!cadMode}>
-        <boxGeometry args={[BLOCK_WIDTH, BLOCK_HEIGHT * 0.6, BLOCK_LENGTH]} />
+        <boxGeometry args={[BLOCK_WIDTH * 1.05, BLOCK_HEIGHT * 0.65, BLOCK_LENGTH]} />
         {cadMode ? (
           <meshBasicMaterial color="#000000" wireframe />
         ) : (
@@ -1172,11 +1172,20 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
       </mesh>
 
       {/* Cylinder banks */}
-      {[-1, 1].map((side) => (
+      {[-1, 1].map((side) => {
+        const bankWallWidth = BORE + toUnits(2.0);
+        const bankWallHeight = DECK_HEIGHT * 0.75;
+        const bankWallYCenter = DECK_HEIGHT * 0.45;
+        const bankWallXCenter = side * (BORE / 2 + toUnits(0.5));
+        const boreLinerHeight = bankWallHeight;
+        const deckSurfaceY = bankWallYCenter + bankWallHeight / 2;
+        const boreFloorY = bankWallYCenter - bankWallHeight / 2;
+
+        return (
         <group key={`bank-${side}`} rotation={[0, 0, side * BANK_ANGLE]}>
-          {/* Cylinder head deck surface */}
-          <mesh position={[side * 0.18, 0.45, 0]} castShadow={!cadMode}>
-            <boxGeometry args={[0.2, 0.3, BLOCK_LENGTH * 0.92]} />
+          {/* Thick cylinder bank wall - fully encloses bores */}
+          <mesh position={[bankWallXCenter, bankWallYCenter, 0]} castShadow={!cadMode}>
+            <boxGeometry args={[bankWallWidth, bankWallHeight, BLOCK_LENGTH * 0.92]} />
             {cadMode ? (
               <meshBasicMaterial color="#000000" wireframe />
             ) : (
@@ -1198,9 +1207,9 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
             const zPos = FIRST_CYLINDER_Z + i * CYLINDER_SPACING + bankZOffset;
             return (
               <group key={`cylinder-${side}-${i}`}>
-                {/* Cylinder bore liner */}
-                <mesh position={[side * 0.18, 0.4, zPos]}>
-                  <cylinderGeometry args={[boreRadius, boreRadius, 0.4, 32, 1, true]} />
+                {/* Cylinder bore liner - tall to match bank wall */}
+                <mesh position={[bankWallXCenter, bankWallYCenter, zPos]}>
+                  <cylinderGeometry args={[boreRadius, boreRadius, boreLinerHeight, 32, 1, true]} />
                   {cadMode ? (
                     <meshBasicMaterial color="#000000" wireframe />
                   ) : (
@@ -1215,10 +1224,28 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
                     />
                   )}
                 </mesh>
+
+                {/* Bore liner floor - seals bottom of bore */}
+                <mesh position={[bankWallXCenter, boreFloorY, zPos]} rotation={[-Math.PI / 2, 0, 0]}>
+                  <circleGeometry args={[boreRadius, 32]} />
+                  {cadMode ? (
+                    <meshBasicMaterial color="#000000" wireframe />
+                  ) : (
+                    <meshStandardMaterial 
+                      color={xrayMode ? "#3a3a3a" : "#222"} 
+                      metalness={xrayMode ? 0.88 : 0.4} 
+                      roughness={xrayMode ? 0.15 : 0.7} 
+                      side={THREE.DoubleSide}
+                      transparent={xrayMode}
+                      opacity={xrayMode ? 0.25 : 1}
+                      depthWrite={!xrayMode}
+                    />
+                  )}
+                </mesh>
                 
-                {/* Deck surface around bore */}
-                <mesh position={[side * 0.18, 0.62, zPos]} castShadow={!cadMode}>
-                  <ringGeometry args={[boreRadius + 0.01, boreRadius + 0.05, 32]} />
+                {/* Deck surface around bore - wide ring covering full area */}
+                <mesh position={[bankWallXCenter, deckSurfaceY, zPos]} rotation={[-Math.PI / 2, 0, 0]} castShadow={!cadMode}>
+                  <ringGeometry args={[boreRadius, BORE / 2 + toUnits(1.5), 32]} />
                   {cadMode ? (
                     <meshBasicMaterial color="#000000" wireframe />
                   ) : (
@@ -1234,8 +1261,8 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
                     <mesh 
                       key={`bolt-boss-${j}`}
                       position={[
-                        side * 0.18 + Math.cos(boltAngle) * boltRadius * (side),
-                        0.63, 
+                        bankWallXCenter + Math.cos(boltAngle) * boltRadius * (side),
+                        deckSurfaceY + 0.01, 
                         zPos + Math.sin(boltAngle) * boltRadius
                       ]} 
                       castShadow={!cadMode}
@@ -1253,7 +1280,8 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
             );
           })}
         </group>
-      ))}
+        );
+      })}
 
       {/* Valley cover / intake manifold mounting surface */}
       <mesh position={[0, 0.55, 0]} castShadow>
