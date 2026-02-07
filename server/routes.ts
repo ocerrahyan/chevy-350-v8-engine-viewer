@@ -35,16 +35,14 @@ export async function registerRoutes(
     }
   });
 
-  // Push to GitHub endpoint
+  // Push to GitHub endpoint - pushes ALL source files
   app.post("/api/push-to-github", async (req, res) => {
     try {
       const repoName = "chevy-350-v8-engine-viewer";
       const description = "Interactive 3D Chevy 350 Small Block V8 engine visualization with physics-based thermodynamic simulation";
       
-      // Create or get repo
       const { repo, owner } = await createGitHubRepo(repoName, description);
       
-      // List of files to push
       const filesToPush = [
         "package.json",
         "tsconfig.json",
@@ -53,15 +51,19 @@ export async function registerRoutes(
         "drizzle.config.ts",
         "VSCODE-SETUP-README.md",
         "shared/schema.ts",
+        "script/build.ts",
         "server/index.ts",
         "server/routes.ts",
         "server/storage.ts",
         "server/vite.ts",
         "server/static.ts",
+        "server/github-push.ts",
         "client/index.html",
         "client/src/main.tsx",
         "client/src/App.tsx",
         "client/src/index.css",
+        "client/src/pages/not-found.tsx",
+        "client/src/hooks/use-is-mobile.tsx",
         "client/src/lib/utils.ts",
         "client/src/lib/queryClient.ts",
         "client/src/lib/stores/useEngine.tsx",
@@ -91,21 +93,69 @@ export async function registerRoutes(
         "client/src/components/game/DimensionalReport.tsx",
         "client/src/components/game/FinalAuditPanel.tsx",
         "client/src/components/game/SceneMaterialOverride.tsx",
+        "client/src/components/ui/accordion.tsx",
+        "client/src/components/ui/alert-dialog.tsx",
+        "client/src/components/ui/alert.tsx",
+        "client/src/components/ui/aspect-ratio.tsx",
+        "client/src/components/ui/avatar.tsx",
+        "client/src/components/ui/badge.tsx",
+        "client/src/components/ui/breadcrumb.tsx",
+        "client/src/components/ui/button.tsx",
+        "client/src/components/ui/calendar.tsx",
+        "client/src/components/ui/card.tsx",
+        "client/src/components/ui/carousel.tsx",
+        "client/src/components/ui/chart.tsx",
+        "client/src/components/ui/checkbox.tsx",
+        "client/src/components/ui/collapsible.tsx",
+        "client/src/components/ui/command.tsx",
+        "client/src/components/ui/context-menu.tsx",
+        "client/src/components/ui/dialog.tsx",
+        "client/src/components/ui/drawer.tsx",
+        "client/src/components/ui/dropdown-menu.tsx",
+        "client/src/components/ui/form.tsx",
+        "client/src/components/ui/hover-card.tsx",
+        "client/src/components/ui/input-otp.tsx",
+        "client/src/components/ui/input.tsx",
+        "client/src/components/ui/interface.tsx",
+        "client/src/components/ui/label.tsx",
+        "client/src/components/ui/menubar.tsx",
+        "client/src/components/ui/navigation-menu.tsx",
+        "client/src/components/ui/pagination.tsx",
+        "client/src/components/ui/popover.tsx",
+        "client/src/components/ui/progress.tsx",
+        "client/src/components/ui/radio-group.tsx",
+        "client/src/components/ui/resizable.tsx",
+        "client/src/components/ui/scroll-area.tsx",
+        "client/src/components/ui/select.tsx",
+        "client/src/components/ui/separator.tsx",
+        "client/src/components/ui/sheet.tsx",
+        "client/src/components/ui/sidebar.tsx",
+        "client/src/components/ui/skeleton.tsx",
+        "client/src/components/ui/slider.tsx",
+        "client/src/components/ui/sonner.tsx",
+        "client/src/components/ui/switch.tsx",
+        "client/src/components/ui/table.tsx",
+        "client/src/components/ui/tabs.tsx",
+        "client/src/components/ui/textarea.tsx",
+        "client/src/components/ui/toggle-group.tsx",
+        "client/src/components/ui/toggle.tsx",
+        "client/src/components/ui/tooltip.tsx",
       ];
       
-      // Push each file
+      let pushed = 0;
       for (const file of filesToPush) {
         const fullPath = path.join(process.cwd(), file);
         if (fs.existsSync(fullPath)) {
           const content = fs.readFileSync(fullPath, 'utf-8');
-          await pushFileToRepo(owner, repoName, file, content, `Add ${file}`);
+          await pushFileToRepo(owner, repoName, file, content, `Update ${file}`);
+          pushed++;
         }
       }
       
       res.json({ 
         success: true, 
         repoUrl: repo.html_url,
-        message: `Pushed ${filesToPush.length} files to GitHub`
+        message: `Pushed ${pushed} files to GitHub`
       });
     } catch (error: any) {
       console.error("GitHub push error:", error);
