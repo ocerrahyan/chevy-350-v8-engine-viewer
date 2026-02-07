@@ -25,6 +25,9 @@ interface EngineState {
   // Block visibility toggle (hide block to see rotating assembly)
   blockVisible: boolean;
 
+  wireframeMode: boolean;
+  materialPreset: 'default' | 'metallic' | 'matte' | 'colored';
+
   setThrottle: (throttle: number) => void;
   updateRPM: (delta: number) => void;
   toggleEngine: () => void;
@@ -46,6 +49,9 @@ interface EngineState {
   
   // Block visibility control
   toggleBlockVisible: () => void;
+
+  toggleWireframe: () => void;
+  setMaterialPreset: (preset: 'default' | 'metallic' | 'matte' | 'colored') => void;
 }
 
 export const useEngine = create<EngineState>()(
@@ -72,6 +78,9 @@ export const useEngine = create<EngineState>()(
     
     // Block visibility default (visible)
     blockVisible: true,
+
+    wireframeMode: false,
+    materialPreset: 'default' as const,
 
     setThrottle: (throttle: number) => {
       const clampedThrottle = Math.max(0, Math.min(100, throttle));
@@ -229,6 +238,14 @@ export const useEngine = create<EngineState>()(
     
     toggleBlockVisible: () => {
       set(state => ({ blockVisible: !state.blockVisible }));
+    },
+
+    toggleWireframe: () => {
+      set(state => ({ wireframeMode: !state.wireframeMode }));
+    },
+
+    setMaterialPreset: (preset: 'default' | 'metallic' | 'matte' | 'colored') => {
+      set({ materialPreset: preset });
     },
   }))
 );
