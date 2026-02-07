@@ -9,6 +9,7 @@ import { DebugToggle } from "./components/game/DebugToggle";
 import { XRayToggle } from "./components/game/XRayToggle";
 import { CadModeToggle } from "./components/game/CadModeToggle";
 import { BlockVisibilityToggle } from "./components/game/BlockVisibilityToggle";
+import { MaterialPresetPanel } from "./components/game/MaterialPresetPanel";
 import { LoadControl } from "./components/game/LoadControl";
 import { PhysicsTelemetry } from "./components/game/PhysicsTelemetry";
 import { TelemetryOverlay } from "./components/game/AnimatedV8Engine";
@@ -90,6 +91,7 @@ function App() {
       <XRayToggle />
       <CadModeToggle />
       <BlockVisibilityToggle />
+      <MaterialPresetPanel />
       <ViewPresetsUI onSelectView={setActiveView} />
       <ThrottleControl />
       <LoadControl />
