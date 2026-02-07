@@ -1173,9 +1173,11 @@ function EngineBlock350({ debugMode, xrayMode = false }: { debugMode: boolean; x
 
       {/* Cylinder banks */}
       {[-1, 1].map((side) => {
-        const bankWallWidth = BORE + toUnits(2.0);
-        const bankWallHeight = DECK_HEIGHT * 0.75;
-        const bankWallYCenter = DECK_HEIGHT * 0.45;
+        const bankWallWidth = BORE + toUnits(2.5);
+        const pistonBDCSkirt = 0.22;
+        const pistonTDCCrown = DECK_HEIGHT;
+        const bankWallHeight = pistonTDCCrown - pistonBDCSkirt + 0.02;
+        const bankWallYCenter = (pistonTDCCrown + pistonBDCSkirt) / 2;
         const bankWallXCenter = side * (BORE / 2 + toUnits(0.5));
         const boreLinerHeight = bankWallHeight;
         const deckSurfaceY = bankWallYCenter + bankWallHeight / 2;
