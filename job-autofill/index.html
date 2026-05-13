@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Job Autofill</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Autofill">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="hdr">
+  <h1>Job Autofill</h1>
+  <p class="sub">Your resume info — saved on this device. Tap any field to copy. Install the bookmarklet to auto-fill any job site.</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="profile" class="on">Profile</button>
+  <button data-tab="experience">Experience</button>
+  <button data-tab="education">Education</button>
+  <button data-tab="extras">Extras</button>
+  <button data-tab="tools">Tools</button>
+</nav>
+
+<main>
+
+<section data-pane="profile" class="pane on">
+  <h2>Personal</h2>
+  <div class="grid">
+    <label>First name <input data-path="personal.firstName" autocomplete="given-name"></label>
+    <label>Middle name <input data-path="personal.middleName" autocomplete="additional-name"></label>
+    <label>Last name <input data-path="personal.lastName" autocomplete="family-name"></label>
+    <label>Preferred name <input data-path="personal.preferredName" autocomplete="nickname"></label>
+    <label>Pronouns <input data-path="personal.pronouns" placeholder="she/her, he/him, they/them"></label>
+    <label>Headline <input data-path="personal.headline" placeholder="Senior Software Engineer"></label>
+  </div>
+
+  <h2>Contact</h2>
+  <div class="grid">
+    <label>Email <input data-path="contact.email" type="email" autocomplete="email"></label>
+    <label>Phone <input data-path="contact.phone" type="tel" autocomplete="tel"></label>
+    <label class="full">Address line 1 <input data-path="contact.address1" autocomplete="address-line1"></label>
+    <label class="full">Address line 2 <input data-path="contact.address2" autocomplete="address-line2"></label>
+    <label>City <input data-path="contact.city" autocomplete="address-level2"></label>
+    <label>State / Region <input data-path="contact.state" autocomplete="address-level1"></label>
+    <label>ZIP / Postal <input data-path="contact.postalCode" autocomplete="postal-code"></label>
+    <label>Country <input data-path="contact.country" autocomplete="country-name"></label>
+  </div>
+
+  <h2>Links</h2>
+  <div class="grid">
+    <label class="full">LinkedIn <input data-path="links.linkedin" type="url" placeholder="https://linkedin.com/in/..."></label>
+    <label class="full">GitHub <input data-path="links.github" type="url" placeholder="https://github.com/..."></label>
+    <label class="full">Portfolio / Website <input data-path="links.portfolio" type="url"></label>
+    <label class="full">Other <input data-path="links.other" type="url"></label>
+  </div>
+
+  <h2>Work authorization &amp; demographics</h2>
+  <div class="grid">
+    <label>Authorized to work? <input data-path="workAuth.authorizedToWork" placeholder="Yes / No"></label>
+    <label>Need sponsorship? <input data-path="workAuth.requiresSponsorship" placeholder="Yes / No"></label>
+    <label>Veteran status <input data-path="workAuth.veteranStatus"></label>
+    <label>Disability status <input data-path="workAuth.disabilityStatus"></label>
+    <label>Race / Ethnicity <input data-path="workAuth.raceEthnicity"></label>
+    <label>Gender <input data-path="workAuth.gender"></label>
+  </div>
+
+  <h2>Logistics</h2>
+  <div class="grid">
+    <label>Desired salary <input data-path="logistics.desiredSalary" placeholder="$150,000"></label>
+    <label>Notice period <input data-path="logistics.noticePeriod" placeholder="2 weeks"></label>
+    <label>Earliest start date <input data-path="logistics.earliestStartDate"></label>
+    <label>Willing to relocate? <input data-path="logistics.willingToRelocate" placeholder="Yes / No"></label>
+    <label class="full">Remote preference <input data-path="logistics.remotePreference" placeholder="Remote / Hybrid / On-site"></label>
+  </div>
+</section>
+
+<section data-pane="experience" class="pane">
+  <h2>Work experience</h2>
+  <p class="hint">The first entry is what the bookmarklet uses to fill "current/most recent role" fields. Drag isn't supported — use the up/down buttons to reorder.</p>
+  <div id="experienceList" class="list"></div>
+  <button class="add" data-add="experience">+ Add experience</button>
+</section>
+
+<section data-pane="education" class="pane">
+  <h2>Education</h2>
+  <div id="educationList" class="list"></div>
+  <button class="add" data-add="education">+ Add education</button>
+</section>
+
+<section data-pane="extras" class="pane">
+  <h2>Skills</h2>
+  <label class="full"><textarea data-path="skills" rows="3" placeholder="Comma separated: JavaScript, React, Python, SQL, ..."></textarea></label>
+
+  <h2>Professional summary</h2>
+  <label class="full"><textarea data-path="summary" rows="6" placeholder="A short paragraph about you. Used for cover-letter / summary fields."></textarea></label>
+
+  <h2>Custom Q&amp;A snippets</h2>
+  <p class="hint">Paste your common answers ("Why this company", "Tell me about yourself") so they're a tap-to-copy away.</p>
+  <div id="snippetsList" class="list"></div>
+  <button class="add" data-add="snippets">+ Add snippet</button>
+
+  <h2>References</h2>
+  <div id="referencesList" class="list"></div>
+  <button class="add" data-add="references">+ Add reference</button>
+</section>
+
+<section data-pane="tools" class="pane">
+  <h2>Bookmarklet</h2>
+  <p class="hint">This is the magic. The bookmarklet embeds your data and fills matching fields on any job site you're viewing in Safari.</p>
+  <ol class="howto">
+    <li>Tap <b>Generate / refresh</b> below.</li>
+    <li>Tap <b>Copy bookmarklet</b>.</li>
+    <li>In Safari, tap the share icon &rarr; <b>Add Bookmark</b> on this page. Save it (anywhere, you'll edit it).</li>
+    <li>Tap the book icon &rarr; <b>Edit</b> &rarr; open the bookmark you just made &rarr; clear the address &rarr; <b>paste</b> &rarr; rename to "Fill App" &rarr; Done.</li>
+    <li>Move it into <b>Favorites</b> so it shows in Safari's address bar.</li>
+    <li>On any job application page, tap the address bar &rarr; tap <b>Fill App</b>. Boom.</li>
+  </ol>
+  <div class="bmrow">
+    <button id="genBm" class="primary">Generate / refresh</button>
+    <button id="copyBm" disabled>Copy bookmarklet</button>
+  </div>
+  <details>
+    <summary>Show raw bookmarklet</summary>
+    <textarea id="bmOut" readonly rows="6" placeholder="Tap Generate above."></textarea>
+  </details>
+
+  <h2>Backup &amp; restore</h2>
+  <p class="hint">Your data lives in this browser's localStorage. Export to a file so you don't lose it.</p>
+  <div class="bmrow">
+    <button id="exportJson">Export JSON</button>
+    <label class="filebtn">Import JSON<input id="importJson" type="file" accept="application/json,.json" hidden></label>
+  </div>
+  <div class="bmrow">
+    <button id="clearAll" class="danger">Clear all data</button>
+  </div>
+
+  <h2>About</h2>
+  <p class="hint">100% client-side. No server, no analytics, no network calls. View source at <a href="https://github.com/ocerrahyan/chevy-350-v8-engine-viewer/tree/main/job-autofill" target="_blank" rel="noopener">github.com/.../job-autofill</a>.</p>
+</section>
+
+</main>
+
+<div id="toast" class="toast" hidden></div>
+
+<template id="tpl-experience">
+  <div class="card" data-kind="experience">
+    <div class="cardhdr">
+      <span class="cardtitle">Experience</span>
+      <div class="cardbtns">
+        <button data-act="up" title="Move up">&uarr;</button>
+        <button data-act="down" title="Move down">&darr;</button>
+        <button data-act="remove" class="danger" title="Remove">&times;</button>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="full">Company <input data-field="company"></label>
+      <label class="full">Title <input data-field="title"></label>
+      <label>Location <input data-field="location"></label>
+      <label>Start (e.g. Jan 2022) <input data-field="start"></label>
+      <label>End (or "Present") <input data-field="end"></label>
+      <label class="check"><input type="checkbox" data-field="current"> I currently work here</label>
+      <label class="full">Description <textarea data-field="description" rows="3"></textarea></label>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-education">
+  <div class="card" data-kind="education">
+    <div class="cardhdr">
+      <span class="cardtitle">Education</span>
+      <div class="cardbtns">
+        <button data-act="up">&uarr;</button>
+        <button data-act="down">&darr;</button>
+        <button data-act="remove" class="danger">&times;</button>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="full">School <input data-field="school"></label>
+      <label>Degree <input data-field="degree" placeholder="B.S."></label>
+      <label>Field of study <input data-field="field"></label>
+      <label>Start <input data-field="start"></label>
+      <label>End <input data-field="end"></label>
+      <label>GPA <input data-field="gpa"></label>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-snippets">
+  <div class="card" data-kind="snippets">
+    <div class="cardhdr">
+      <span class="cardtitle">Snippet</span>
+      <div class="cardbtns">
+        <button data-act="up">&uarr;</button>
+        <button data-act="down">&darr;</button>
+        <button data-act="remove" class="danger">&times;</button>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="full">Label <input data-field="label" placeholder="Why this company"></label>
+      <label class="full">Answer <textarea data-field="text" rows="5"></textarea></label>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-references">
+  <div class="card" data-kind="references">
+    <div class="cardhdr">
+      <span class="cardtitle">Reference</span>
+      <div class="cardbtns">
+        <button data-act="up">&uarr;</button>
+        <button data-act="down">&darr;</button>
+        <button data-act="remove" class="danger">&times;</button>
+      </div>
+    </div>
+    <div class="grid">
+      <label class="full">Name <input data-field="name"></label>
+      <label>Title <input data-field="title"></label>
+      <label>Company <input data-field="company"></label>
+      <label>Email <input data-field="email" type="email"></label>
+      <label>Phone <input data-field="phone" type="tel"></label>
+      <label class="full">Relationship <input data-field="relationship"></label>
+    </div>
+  </div>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
