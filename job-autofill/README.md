@@ -42,3 +42,7 @@ then visit `http://localhost:8000`.
 ## Privacy
 
 All data is stored in `localStorage` on your device only. Use **Export JSON** in the Tools tab to back it up. The bookmarklet contains a snapshot of your data — keep your bookmarks private.
+
+## Hosting
+
+Auto-deployed to GitHub Pages on every push to `main` (and the active feature branch) via `.github/workflows/pages.yml`.
