@@ -2,7 +2,9 @@ name: Deploy job-autofill to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - claude/job-application-autofill-sFQxo
     paths:
       - 'job-autofill/**'
       - '.github/workflows/pages.yml'
